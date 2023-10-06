@@ -70,10 +70,11 @@ def main():
         # Find product title, price, and data-asin attributes
         product_divs = soup.find_all('div', {'data-component-type': 's-search-result'})
 
-        d = {"data_asins": [], "product_titles": [], "prices": [], "stars": [], 'reviews': []}
+        d = {"brandname": [], "product_titles": [], "prices": [], "stars": [], 'reviews': []}
 
         for product_div in product_divs:
-            data_asin = product_div.get('data-asin', 'N/A')
+            # data_asin = product_div.get('data-asin', 'N/A')
+
             product_title_elem = product_div.find('h2').find('a')
 
             if product_title_elem:
@@ -83,15 +84,22 @@ def main():
                 product_title_span = product_div.find('span', {'class': 'a-size-base-plus a-color-base a-text-normal'})
                 product_title = product_title_span.get_text(strip=True) if product_title_span else 'N/A'
 
+            
+            brand = (product_title.split(" ")[0]).upper()
+
             price_elem = product_div.find('span', {'class': 'a-price-whole'})
             price = price_elem.get_text(strip=True) if price_elem else 'N/A'
+            if('.' in price):
+                price=price[:-1]
+
             star_elem = product_div.find('div', {'class': 'a-row a-size-small'})
             star_and_reviews = star_elem.get_text(strip=True) if star_elem else 'N/A'
             star = star_and_reviews[:4] if star_and_reviews else 'N/A'
+
             review_elem = product_div.find('span', {'class': 'a-size-base s-underline-text'})
             review = review_elem.get_text(strip=True) if review_elem else 'N/A'
 
-            d['data_asins'].append(data_asin)
+            d['brandname'].append(brand)
             d['product_titles'].append(product_title)
             d['prices'].append(price)
             d['stars'].append(star)
