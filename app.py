@@ -5,7 +5,8 @@ import random
 import pandas as pd
 import base64
 from io import BytesIO
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 # User-Agent strings to mimic different browsers
 user_agents = [
     # Popular Desktop Browsers
@@ -41,6 +42,7 @@ def send_request(url):
     }
     response = requests.get(url, headers=headers)
     return response
+    
 
 def main():
     st.title("Amazon Web Scraper")
@@ -51,6 +53,8 @@ def main():
     if not url:
         st.warning("Please enter a valid Amazon URL.")
         return
+    
+    visualization_choice = st.checkbox("Visualizations")
 
     # Button to trigger scraping
     if st.button("Scrape"):
@@ -111,6 +115,19 @@ def main():
 
         # Display the DataFrame
         st.write(amazon_df)
+
+        # Visualizations
+
+        if (visualization_choice):
+            # Create a bar chart showing the count of brands
+            brand_counts = amazon_df['brandname'].value_counts()
+            plt.figure(figsize=(10, 6))
+            sns.barplot(x=brand_counts.index, y=brand_counts.values, palette='viridis')
+            plt.xticks(rotation=45)
+            plt.xlabel('Brand')
+            plt.ylabel('Count')
+            plt.title('Count of Brands')
+            st.pyplot(plt)
 
         # Allow users to download the scraped data as an Excel file
         excel_file = BytesIO()
